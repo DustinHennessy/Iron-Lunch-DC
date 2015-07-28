@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreLocation/CoreLocation.h>
+#import <MapKit/MapKit.h>
 
-@interface FirstViewController : UIViewController
 
+@interface FirstViewController : UIViewController <UISearchBarDelegate, CLLocationManagerDelegate, MKMapViewDelegate>
 
 @end
 

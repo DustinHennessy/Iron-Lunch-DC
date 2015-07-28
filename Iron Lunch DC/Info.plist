@@ -22,6 +22,10 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationUsageDescription</key>
+	<string>Your location helps us find lunch spots near you.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Your location helps us find lunch spots relative to you.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
