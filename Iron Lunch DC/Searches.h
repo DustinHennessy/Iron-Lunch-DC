@@ -12,9 +12,9 @@
 
 @interface Searches : NSObject
 
-@property (nonatomic, strong)        NSArray        *dataArray;
-@property (nonatomic, strong) NSNumber              *searchLatitude;
-@property (nonatomic, strong) NSNumber              *searchLongitude;
+@property (nonatomic, strong)   NSArray        *dataArray;
+@property (nonatomic, strong)   NSNumber       *searchLatitude;
+@property (nonatomic, strong)   NSNumber       *searchLongitude;
 
 + (id)sharedSearch;
 - (void)searchDataForString:(NSString *)searchString inRegion:(MKCoordinateRegion)region;

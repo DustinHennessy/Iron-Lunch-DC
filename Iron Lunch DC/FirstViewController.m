@@ -27,80 +27,16 @@
 
 //Make CLLocationMake and use it in the region. Turn it into a span.
 
-#pragma mark - Search methods 
 
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    NSLog(@"Getting Data");
-    [_searchManager searchDataForString:_locationSearchBar.text inRegion:[_lunchMapView region]];
-    [_locationSearchBar resignFirstResponder];
-}
 
-- (void)newDataReceived {
-    NSLog(@"NDR");
-    NSMutableArray *locs = [[NSMutableArray alloc] init];
-    for (id <MKAnnotation> annot in [_lunchMapView annotations]) {
-        if ([annot isKindOfClass:[MKPointAnnotation class]]) {
-            [locs addObject:annot];
-        }
-    }
-    [_lunchMapView removeAnnotations:locs];
 
-    for (MKMapItem *item in [_searchManager dataArray]) {
-        
-        MKPointAnnotation *pa = [[MKPointAnnotation alloc] init];
-        pa.coordinate = item.placemark.location.coordinate;
-        pa.title = item.name;
-        pa.subtitle = [NSString stringWithFormat:@"Local Search: %f %f", item.placemark.location.coordinate.latitude, item.placemark.location.coordinate.longitude];
-        [_lunchMapView addAnnotation:pa];
-    }
-    
-}
-
-- (void)zoomToLocationWithLat:(float)latitude andLon:(float)longitude {
-    
-    
-    if (latitude == 0 && longitude == 0) {
-        NSLog(@"Bad Coordinates");
-              } else {
-                  
-                  CLLocationCoordinate2D zoomLocation;
-                  zoomLocation.latitude = latitude;
-                  zoomLocation.longitude = longitude;
-                  MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(zoomLocation, 180000, 18000);
-                  MKCoordinateRegion adjustedRegion = [_lunchMapView regionThatFits:viewRegion];
-                  [_lunchMapView setRegion:adjustedRegion animated:YES];
-                  
-              }
-    
-}
-
-//- (void)appleSearch {
-//    MKLocalSearchRequest *request = [[MKLocalSearchRequest alloc] init];
-//    request.naturalLanguageQuery = _locationSearchBar.text;
-//    request.region = [_lunchMapView region];
-//    MKLocalSearch *search = [[MKLocalSearch alloc] initWithRequest:request];
-//    [search startWithCompletionHandler:^(MKLocalSearchResponse *response, NSError *error) {
-//        if (response.mapItems.count == 0) {
-//            NSLog(@"No results");
-//        } else {
-//            for (MKMapItem *item in response.mapItems) {
-//                MKPointAnnotation *pa = [[MKPointAnnotation alloc] init];
-//                pa.coordinate = item.placemark.location.coordinate;
-//                pa.title = item.name;
-//                pa.subtitle = [NSString stringWithFormat:@"Local Search: %f %f", item.placemark.location.coordinate.latitude, item.placemark.location.coordinate.longitude];
-//                [_lunchMapView addAnnotation:pa];
-//            }
-//        }
-//    }];
-//    NSLog(@"Apple Search");
-//}
-
-#pragma mark - Location Methods 
+#pragma mark - Location Methods
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
     
     CLLocation *lastLocation = locations.lastObject;
     NSLog(@"Location: %F %F", lastLocation.coordinate.latitude, lastLocation.coordinate.longitude);
+    [self zoomToLocationWithLat:lastLocation.coordinate.latitude andLon:lastLocation.coordinate.longitude];
     [_locationManager stopUpdatingLocation];
     
     _searchManager.searchLatitude = [NSNumber numberWithFloat:lastLocation.coordinate.latitude];
@@ -146,6 +82,56 @@
     }
 }
 
+
+#pragma mark - Search methods
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    NSLog(@"Getting Data");
+    [_searchManager searchDataForString:_locationSearchBar.text inRegion:[_lunchMapView region]];
+    [_locationSearchBar resignFirstResponder];
+}
+
+- (void)newDataReceived {
+    NSLog(@"NDR");
+    NSMutableArray *locs = [[NSMutableArray alloc] init];
+    for (id <MKAnnotation> annot in [_lunchMapView annotations]) {
+        if ([annot isKindOfClass:[MKPointAnnotation class]]) {
+            [locs addObject:annot];
+        }
+    }
+    [_lunchMapView removeAnnotations:locs];
+
+    for (MKMapItem *item in [_searchManager dataArray]) {
+        
+        MKPointAnnotation *pa = [[MKPointAnnotation alloc] init];
+        pa.coordinate = item.placemark.location.coordinate;
+        pa.title = item.name;
+        pa.subtitle = [NSString stringWithFormat:@"Local Search: %f %f", item.placemark.location.coordinate.latitude, item.placemark.location.coordinate.longitude];
+        [_lunchMapView addAnnotation:pa];
+    }
+    
+}
+
+- (void)zoomToLocationWithLat:(float)latitude andLon:(float)longitude {
+    
+    
+    if (latitude == 0 && longitude == 0) {
+        NSLog(@"Bad Coordinates");
+              } else {
+                  
+                  CLLocationCoordinate2D zoomLocation;
+                  zoomLocation.latitude = latitude;
+                  zoomLocation.longitude = longitude;
+                  MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(zoomLocation, 18000, 18000);
+                  MKCoordinateRegion adjustedRegion = [_lunchMapView regionThatFits:viewRegion];
+                  [_lunchMapView setRegion:adjustedRegion animated:YES];
+                  
+              }
+    
+}
+
+
+
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
     
     if (annotation != mapView.userLocation) {
@@ -188,10 +174,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupLocationMonitoring];
-    // Do any additional setup after loading the view, typically from a nib.
     _appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     _searchManager = _appDelegate.searchManager;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(newDataReceived) name:@"ResultsDoneNotification" object:nil];
+    
     
     
 }
